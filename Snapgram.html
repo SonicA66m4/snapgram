@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Snapgram</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #000;
+      color: white;
+    }
+
+    .hidden { display: none; }
+
+    .login-container {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      height: 100vh; background: #111;
+    }
+
+    .login-box {
+      background: #222; padding: 30px;
+      border-radius: 12px; box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    }
+
+    .login-box h2 { text-align: center; color: #fff; }
+    .login-box input {
+      width: 100%; padding: 10px; margin: 10px 0;
+      border: 1px solid #555; border-radius: 6px;
+      background: #000; color: white;
+    }
+
+    .login-box button {
+      width: 100%; padding: 10px; background: #fa7e1e;
+      color: white; border: none; border-radius: 6px;
+      cursor: pointer; font-weight: bold;
+    }
+
+    header {
+      background: #111; padding: 10px;
+      text-align: center; font-weight: bold;
+      font-size: 24px; border-bottom: 1px solid #333;
+    }
+
+    .stories {
+      display: flex; overflow-x: auto;
+      padding: 10px; background: #111;
+      border-bottom: 1px solid #333;
+    }
+
+    .story {
+      width: 70px; height: 70px;
+      margin-right: 12px;
+      background: url('https://cdn.gulte.com/wp-content/uploads/2024/01/RajasaabD.jpg');
+      background-size: cover;
+      background-position: center;
+      border-radius: 50%;
+      border: 2px solid #fa7e1e;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 10px; color: white;
+      cursor: pointer; position: relative;
+    }
+
+    .story span {
+      position: absolute;
+      bottom: -18px;
+      text-align: center;
+      width: 100%;
+      font-size: 10px;
+      color: #aaa;
+    }
+
+    .feed { padding: 10px; }
+
+    .post {
+      background: #111; margin-bottom: 20px;
+      padding: 10px; border: 1px solid #333;
+      border-radius: 10px;
+    }
+
+    .post img {
+      width: 100%; border-radius: 10px;
+    }
+
+    .post h4 {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 5px;
+    }
+
+    .streak {
+      font-size: 14px; color: orange;
+    }
+
+    .verified {
+      color: #00f;
+      font-size: 16px;
+      margin-left: 6px;
+    }
+
+    .like-btn {
+      margin-top: 8px;
+      font-size: 22px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .chatbox {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #333;
+      background: #111;
+    }
+
+    .chatbox input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #555;
+      background: #000;
+      color: #fff;
+      margin-right: 10px;
+    }
+
+    .chatbox button {
+      padding: 10px 15px;
+      background: #fa7e1e;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+    }
+
+    .chat-response {
+      padding: 10px;
+      color: #0f0;
+      font-size: 14px;
+    }
+
+    footer {
+      position: fixed; bottom: 50px; left: 0; right: 0;
+      background: #111; border-top: 1px solid #333;
+      display: flex; justify-content: space-around;
+      padding: 10px 0;
+    }
+
+    footer button {
+      background: none; border: none;
+      font-size: 24px; cursor: pointer; color: white;
+    }
+
+    video {
+      width: 100%; margin-top: 10px;
+    }
+
+    #storyModal {
+      position: fixed; top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.9);
+      display: none; justify-content: center;
+      align-items: center; z-index: 200;
+    }
+
+    #storyModal iframe {
+      width: 90%; height: 50vh;
+      border-radius: 12px; border: none;
+    }
+
+    #storyModal button {
+      margin-top: 20px; padding: 10px 20px;
+      background: white; border: none;
+      cursor: pointer; font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Login Page -->
+<div id="loginPage" class="login-container">
+  <div class="login-box">
+    <h2>Snapgram Login</h2>
+    <input type="text" id="username" placeholder="Username" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <p id="errorMsg" style="color: red; text-align:center;"></p>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="mainApp" class="hidden">
+  <header><h1>Snapgram</h1></header>
+
+  <section class="stories">
+    <div class="story" onclick="openStory()" title="Prabhas"><span>Prabhas</span></div>
+    <div class="story" onclick="openStory()" title="Hrithik"><span>Hrithik</span></div>
+    <div class="story" onclick="openStory()" title="Vijay"><span>Vijay</span></div>
+  </section>
+
+  <section class="feed" id="feed"></section>
+
+  <footer>
+    <button onclick="openCamera()">📷</button>
+    <button onclick="alert('Home')">🏠</button>
+    <button onclick="alert('Messages')">💬</button>
+  </footer>
+
+  <div class="chatbox">
+    <input type="text" id="chatInput" placeholder="Say something..." />
+    <button onclick="replyChat()">Send</button>
+  </div>
+  <div class="chat-response" id="chatResponse"></div>
+
+  <div>
+    <video id="cameraView" autoplay></video>
+  </div>
+
+  <div id="storyModal">
+    <div style="text-align:center;">
+      <iframe src="https://www.youtube.com/embed/NZbmcl0QUaU?autoplay=1" allow="autoplay" allowfullscreen></iframe>
+      <br />
+      <button onclick="closeStory()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const validUsername = "23951a66m4";
+  const validPassword = "sonic2004";
+
+  function login() {
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("password").value.trim();
+    const error = document.getElementById("errorMsg");
+
+    if (user === validUsername && pass === validPassword) {
+      document.getElementById("loginPage").style.display = "none";
+      document.getElementById("mainApp").classList.remove("hidden");
+      loadFeed();
+    } else {
+      error.textContent = "❌ Invalid username or password!";
+    }
+  }
+
+  const posts = [
+    {
+      username: "Prabhas",
+      streak: 1098,
+      image: "https://st1.bollywoodlife.com/wp-content/uploads/2017/11/Prabhas-Baahubali-1.jpg"
+    },
+    {
+      username: "Hrithik Roshan",
+      streak: 1039,
+      image: "https://e0.pxfuel.com/wallpapers/964/192/desktop-wallpaper-hrithik-roshan-war-hindi-movie.jpg"
+    },
+    {
+      username: "Vijay Thalapathy",
+      streak: 1089,
+      image: "https://i.pinimg.com/originals/0a/b0/ed/0ab0ed8bd46d62af248d5c8c2583bd46.jpg"
+    }
+  ];
+
+  function loadFeed() {
+    const feed = document.getElementById("feed");
+    feed.innerHTML = "";
+    posts.forEach((post) => {
+      const postDiv = document.createElement("div");
+      postDiv.className = "post";
+      postDiv.innerHTML = `
+        <h4>
+          ${post.username} <span class="verified">✔️</span>
+          <span class="streak">🔥 ${post.streak}</span>
+        </h4>
+        <img src="${post.image}" alt="post" />
+        <button class="like-btn" onclick="toggleLike(this)">🤍 Like</button>
+      `;
+      feed.appendChild(postDiv);
+    });
+  }
+
+  function toggleLike(btn) {
+    btn.textContent = btn.textContent.includes("🤍") ? "❤️ Liked" : "🤍 Like";
+  }
+
+  function replyChat() {
+    const input = document.getElementById("chatInput").value.trim().toLowerCase();
+    const responseBox = document.getElementById("chatResponse");
+    if (input === "hi") {
+      responseBox.textContent = "hello";
+    } else {
+      responseBox.textContent = "🤖 I only reply to 'hi'!";
+    }
+  }
+
+  function openCamera() {
+    const video = document.getElementById("cameraView");
+    navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert("Camera access denied or not supported.");
+      });
+  }
+
+  function openStory() {
+    document.getElementById("storyModal").style.display = "flex";
+  }
+
+  function closeStory() {
+    document.getElementById("storyModal").style.display = "none";
+    const iframe = document.querySelector("#storyModal iframe");
+    iframe.src = iframe.src;
+  }
+</script>
+</body>
+</html>
